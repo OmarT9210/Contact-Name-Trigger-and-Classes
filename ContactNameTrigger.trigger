@@ -1,13 +1,15 @@
+// Trigger for Contact object to clean up and standardize the name fields before saving
 trigger ContactNameTrigger on Contact (before insert, before update) {
 
+    // Check if the trigger processing should be bypassed from the custom setting responsible for this object
     if (ContactTriggerDisablerHelper.shouldBypassTrigger()) {
-        return;
+        return; // Exit the trigger if bypass is enabled
     }
 
     for (Contact c : Trigger.new) {
         Boolean bypass = false;
         
-        // Get all active picklist values
+        // Retrieve all active picklist values for the 'Bypass_Automation_Rules__c' field. This allows the user to bypass the name validation if needed.
         Schema.DescribeFieldResult fieldResult = Contact.Bypass_Automation_Rules__c.getDescribe();
         List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
 
@@ -16,7 +18,7 @@ trigger ContactNameTrigger on Contact (before insert, before update) {
             if (entry.getValue() == 'Name Validation' && entry.isActive()) {
                 if (c.Bypass_Automation_Rules__c != null && c.Bypass_Automation_Rules__c.contains(entry.getValue())) {
                     bypass = true;
-                    break;
+                    break; // Exit the loop if bypass is found
                 }
             }
         }
@@ -54,7 +56,6 @@ trigger ContactNameTrigger on Contact (before insert, before update) {
             }
         } catch (Exception e) {
             System.debug('Error processing contact name: ' + e.getMessage());
-            // Optionally, add more handling like throwing a custom exception or logging
         }
     }
 }

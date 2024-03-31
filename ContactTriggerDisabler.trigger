@@ -4,5 +4,4 @@ trigger ContactTriggerDisabler on Contact (before insert, before update, before 
     {
         return;
     }
-    // Any other trigger logic you'd want to include in the future
 }
